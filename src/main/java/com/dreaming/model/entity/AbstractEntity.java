@@ -1,8 +1,6 @@
-package com.dreaming.entity;
+package com.dreaming.model.entity;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author lucky

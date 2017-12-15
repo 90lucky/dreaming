@@ -1,9 +1,7 @@
 package com.dreaming.dao;
 
-import com.dreaming.base.ErrorCode;
-import com.dreaming.entity.AbstractEntity;
+import com.dreaming.model.entity.AbstractEntity;
 import com.dreaming.exception.DreamingSysException;
-import org.springframework.util.ObjectUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,10 +28,6 @@ public class BaseDao {
 
     protected <T extends AbstractEntity> void create(Connection conn, T entity) throws SQLException, DreamingSysException {
         paramMap = getCreateParams(entity);
-        if (paramMap.isEmpty())
-        {
-            throw new DreamingSysException(ErrorCode.BASE_CREATE_EMPTY,"{} create is empty",entity.getClass().getName());
-        }
         StringBuilder stringBuilder = new StringBuilder("insert into ");
         stringBuilder.append(entity.get(KEY_TABLE)).append("(").append(paramMap.get(DB_KEY_STR)).append(") values (")
                 .append(paramMap.get(DB_VALUE_STR)).append(")");
@@ -64,7 +58,27 @@ public class BaseDao {
         return resultList;
     }
 
-    private List<String> getKeys(AbstractEntity entity)
+    protected   <T extends AbstractEntity> T queryOne(Connection conn,T entity) throws SQLException, IllegalAccessException, InstantiationException {
+        StringBuilder stringBuilder = new StringBuilder("select * from ");
+        stringBuilder.append(entity.get(KEY_TABLE)).append(" where 1=1 ").append(getQueryParams(entity));
+        T result = null;
+        PreparedStatement psd = conn.prepareStatement(stringBuilder.toString());
+        ResultSet rs = psd.executeQuery();
+
+        while (rs.next())
+        {
+            result = (T) entity.getClass().newInstance();
+            for(String key:getKeys(entity))
+            {
+                result.put(key,rs.getString(key));
+            }
+        }
+        rs.close();
+        psd.close();
+        return result;
+    }
+
+    private <T extends AbstractEntity> List<String> getKeys(T entity)
     {
         List<String> strList = new ArrayList<>();
         for (String key : entity.keySet()) {
@@ -75,15 +89,15 @@ public class BaseDao {
         return strList;
     }
 
-    private String getQueryParams(AbstractEntity entity)
+    private <T extends AbstractEntity> String getQueryParams(T entity)
     {
         String condition = "";
         if (entity.isEmpty()) {
             return condition;
         }
         for (String key : entity.keySet()) {
-            if (!KEY_TABLE.equals(key) && !ObjectUtils.isEmpty(entity.get(key))) {
-               condition = condition + " and "+ key + " = " + entity.get(key);
+            if (!KEY_TABLE.equals(key) && null != entity.get(key)) {
+               condition = condition + " and "+ key + " = '" + entity.get(key)+"' ";
             }
         }
         return condition;
@@ -98,9 +112,9 @@ public class BaseDao {
         String keyStr = "";
         String valueStr = "";
         for (String key : entity.keySet()) {
-            if (!KEY_TABLE.equals(key) && !ObjectUtils.isEmpty(entity.get(key))) {
+            if (!KEY_TABLE.equals(key) && null !=entity.get(key)) {
                 keyStr = keyStr + key + ",";
-                valueStr = valueStr + entity.get(key) + ",";
+                valueStr = valueStr +"'"+ entity.get(key) + "',";
             }
         }
         map.put(DB_KEY_STR,keyStr.substring(0,keyStr.length()-1));

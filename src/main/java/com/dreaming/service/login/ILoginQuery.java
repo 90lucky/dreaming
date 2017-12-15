@@ -1,6 +1,7 @@
 package com.dreaming.service.login;
 
-import com.dreaming.entity.UserEntity;
+import com.dreaming.model.entity.user.UserBaseEntity;
+import com.dreaming.exception.DreamingSysException;
 import com.dreaming.service.IQuery;
 
 /**
@@ -8,5 +9,5 @@ import com.dreaming.service.IQuery;
  * create on 2017/12/9
  */
 public interface ILoginQuery extends IQuery {
-    boolean checkUserExist(UserEntity userEntity);
+    UserBaseEntity queryUserBase(UserBaseEntity userEntity) throws DreamingSysException;
 }

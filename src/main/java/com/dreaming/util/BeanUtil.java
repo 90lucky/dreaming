@@ -1,7 +1,9 @@
 package com.dreaming.util;
 
+import com.dreaming.model.entity.AbstractEntity;
 import com.dreaming.exception.DreamingSysException;
-import org.springframework.util.ObjectUtils;
+import com.google.common.collect.Maps;
+import org.springframework.cglib.beans.BeanMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,27 +28,19 @@ public class BeanUtil {
      * @return
      * @throws DreamingSysException
      */
-    public static <T> T convertBean2Entity(Object sourceBean, T entity) throws DreamingSysException {
+    public static <T extends AbstractEntity> T convertBean2Entity(Object sourceBean, T entity) {
 
-        if (ObjectUtils.isEmpty(sourceBean)) {
-            throw new DreamingSysException("convertBean2Entity sourceBean not allow Empty:", sourceBean.getClass().getName());
-        }
-        Method[] methods = sourceBean.getClass().getMethods();
+        Method[] methods = sourceBean.getClass().getDeclaredMethods();
 
         for (Method method : methods) {
             String methodName = method.getName();
-            if (methodName.startsWith("set") || methodName.startsWith("is")) {
-                methodName = methodName.replaceFirst("set||is", "get");
+            if (methodName.startsWith("get") || methodName.startsWith("is")) {
+                methodName = methodName.replaceFirst("get||is", "set");
                 try {
-                    Method desMethod = method.getClass().getMethod(methodName, method.getReturnType());
+                    Method desMethod = entity.getClass().getMethod(methodName, method.getReturnType());
                     desMethod.invoke(entity, method.invoke(sourceBean));
-                } catch (NoSuchMethodException e) {
-//                    throw new DreamingSysException("NoSuchMethodException: method:{},source bean:{},des bean:{}",
-//                            methodName, sourceBean.toString(), entity.toString());
-                } catch (IllegalAccessException e) {
-                        System.out.println("");
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                } catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException e) {
+                        e.printStackTrace();
                 }
             }
         }
@@ -54,12 +48,30 @@ public class BeanUtil {
     }
 
     /**
-     *
+     * convert bean to map
      * @param bean
-     * @param map
-     * @param <T>
+     * @return
      */
-    public static <T> void convertBeanToMap(T bean, Map map)
-    {
+    public static <T> Map<String, Object> beanToMap(T bean) {
+        Map<String, Object> map = Maps.newHashMap();
+        if (bean != null) {
+            BeanMap beanMap = BeanMap.create(bean);
+            for (Object key : beanMap.keySet()) {
+                map.put(key+"",beanMap.get(key));
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Convert map to bean
+     * @param map
+     * @param bean
+     * @return
+     */
+    public static <T> T mapToBean(Map<String, Object> map,T bean) {
+        BeanMap beanMap = BeanMap.create(bean);
+        beanMap.putAll(map);
+        return bean;
     }
 }

@@ -1,16 +1,19 @@
 package com.dreaming.controller;
 
-import com.dreaming.exception.DreamingSysException;
-import com.dreaming.base.ErrorCode;
 import com.dreaming.base.Result;
-import com.dreaming.bean.LoginBean;
-import com.dreaming.entity.UserEntity;
+import com.dreaming.model.bean.LoginBean;
+import com.dreaming.model.convert.LoginBeanConvert;
+import com.dreaming.model.entity.user.UserBaseEntity;
+import com.dreaming.exception.DreamingSysException;
+import com.dreaming.service.login.ILoginCreate;
 import com.dreaming.service.login.ILoginQuery;
-import com.dreaming.util.BeanUtil;
+import com.dreaming.service.login.ILoginUpdate;
+import com.dreaming.validation.LoginValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 /**
  * Message:The ACCESS of login from web or other rest request, which is started with spring boot
@@ -22,18 +25,55 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SysLoginController {
     @Autowired
-    private ILoginQuery loginSevice;
+    private ILoginQuery loginQuerySevice;
+
+    @Autowired
+    private ILoginUpdate loginUpdateService;
+
+    @Autowired
+    private ILoginCreate loginCreateService;
+
+    /**
+     * the access for user login, user phone or name is needed and also with the password
+     * @param loginBean user name,password or user phone password
+     * @return if user is exist, return 200, else return the exception
+     */
     @RequestMapping("/system/login")
-    public Result Login(@RequestBody LoginBean loginBean) {
+    public Result login(@RequestBody LoginBean loginBean) {
+        UserBaseEntity resultEntity;
         try {
-            UserEntity userEntity = BeanUtil.convertBean2Entity(loginBean,new UserEntity());
-            if(!loginSevice.checkUserExist(userEntity));
-            {
-               return Result.error(ErrorCode.USER_NOT_EXIST,"user not exist");
-            }
+            LoginValidate.checkLoginParam(loginBean);
+
+            UserBaseEntity queryEntity = LoginBeanConvert.getEntityForLogin(loginBean);
+
+            resultEntity = loginQuerySevice.queryUserBase(queryEntity);
+
+            //通过验证后，更新登陆时间,可将信息存于消息队列，异步更新
+//            loginUpdateService.updateUserBase(resultEntity);
         } catch (DreamingSysException e) {
             e.printStackTrace();
+            return Result.error(e.getErrorCode(),e.getErrorMsg());
+        }
+        return Result.success(resultEntity);
+    }
+
+    /**
+     * the access for user register,phone num and also with password
+     * @param loginBean phone num and also with password
+     * @return rigist success or error with massage
+     */
+    @RequestMapping("/system/register")
+    public Result regist(@RequestBody LoginBean loginBean) {
+        try {
+            LoginValidate.checkRegisterParam(loginBean);
+            UserBaseEntity userEntity = LoginBeanConvert.getEntityForRegister(loginBean);
+            loginCreateService.createUserBase(userEntity);
+        } catch (DreamingSysException e) {
+            e.printStackTrace();
+            return Result.error(e.getErrorCode(),e.getErrorMsg());
         }
         return Result.success();
     }
+
+
 }

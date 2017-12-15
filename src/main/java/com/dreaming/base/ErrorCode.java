@@ -14,9 +14,36 @@ public class ErrorCode {
 
     private static final String BASE_CODE = "00000";
 
-    private static final String USER_CODE = "00001";
+    private static final String LOGIN_CODE = "00001";
 
-    public static final String BASE_CREATE_EMPTY = BASE_CODE + "01";
+    private static final String USER_CODE = "00002";
 
-    public static final String USER_NOT_EXIST = USER_CODE + "01";
+    /**
+     * param is null
+     */
+    public static final String BASE_PARAM_NULL = BASE_CODE + "01";
+    /**
+     * request bean is null
+     */
+    public static final String BASE_BEAN_NULL = BASE_CODE + "02";
+
+    /**
+     * sql execute error
+     */
+    public static final String BASE_SQL_ERROR = BASE_CODE + "03";
+
+    /**
+     * phone num is illegal
+     */
+    public static final String LOGIN_PHONE_ILLEGAL = LOGIN_CODE + "01";
+
+    /**
+     * login user not exist
+     */
+    public static final String LOGIN_NOT_EXIST = LOGIN_CODE + "02";
+
+    /**
+     * login user already exist
+     */
+    public static final String LOGIN_ALREADY_EXIST = LOGIN_CODE + "03";
 }
