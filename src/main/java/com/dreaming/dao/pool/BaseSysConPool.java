@@ -1,5 +1,8 @@
 package com.dreaming.dao.pool;
 
+import com.dreaming.base.JDBCManagers;
+import com.dreaming.util.ToolUtil;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -65,9 +68,17 @@ public class BaseSysConPool {
                 notEmpty.await();
             }
             Connection connection = connections.removeFirst();
+            //非查询的链接，开启事务管理
+            if (!ToolUtil.strIsBlanck(id))
+            {
+                connection.setAutoCommit(false);
+                JDBCManagers.addConn2Trans(id,connection);
+            }
             notFull.signalAll();
             return connection;
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             reentrantLock.unlock();
@@ -80,7 +91,7 @@ public class BaseSysConPool {
      *
      * @param connection
      */
-    public static void release(String id,Connection connection) {
+    public static void release(Connection connection) {
         final ReentrantLock reentrantLock = lock;
         reentrantLock.lock();
         try {

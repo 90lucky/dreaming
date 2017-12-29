@@ -15,8 +15,6 @@ import java.util.List;
  */
 public class LoginDao extends BaseDao {
     private static LoginDao loginDao = new LoginDao();
-//    @Autowired
-//    private BoneCPDataSource dataSource;
     private static Connection conn  ;
     private static String gid;
     private LoginDao(){}
@@ -39,15 +37,15 @@ public class LoginDao extends BaseDao {
             list = queryAll(conn,userEntity);
         } catch (SQLException|InstantiationException|IllegalAccessException e) {
             throw new DreamingSysException(ErrorCode.BASE_SQL_ERROR,"queryAllUserBase failed");
-        } finally {
-            BaseSysConPool.release(gid,conn);
+        }  finally {
+            BaseSysConPool.release(conn);
         }
         return list;
     }
 
     /**
      * query one user
-     * @param userEntity
+     * @param queryEntity
      * @return
      * @throws DreamingSysException
      */
@@ -58,8 +56,8 @@ public class LoginDao extends BaseDao {
             entity = queryOne(conn,queryEntity);
         } catch (SQLException|InstantiationException|IllegalAccessException e) {
             throw new DreamingSysException(ErrorCode.BASE_SQL_ERROR,"queryUserBase failed");
-        } finally {
-            BaseSysConPool.release(gid,conn);
+        }  finally {
+            BaseSysConPool.release(conn);
         }
         return entity;
     }
@@ -73,8 +71,8 @@ public class LoginDao extends BaseDao {
             entity = queryOne(conn,queryEntity);
         } catch (SQLException|InstantiationException|IllegalAccessException e) {
             throw new DreamingSysException(ErrorCode.BASE_SQL_ERROR,"queryUserBase failed");
-        } finally {
-            BaseSysConPool.release(gid,conn);
+        }  finally {
+            BaseSysConPool.release(conn);
         }
         return entity;
     }
@@ -84,8 +82,6 @@ public class LoginDao extends BaseDao {
             create(conn,userEntity);
         } catch (SQLException e) {
             throw new DreamingSysException(ErrorCode.BASE_SQL_ERROR,"createUser failed");
-        } finally {
-            BaseSysConPool.release(gid,conn);
         }
 
     }

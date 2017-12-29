@@ -1,6 +1,8 @@
 package com.dreaming.service.login.impl;
 
 import com.dreaming.base.ErrorCode;
+import com.dreaming.base.ServerFlow;
+import com.dreaming.base.ServerReturn;
 import com.dreaming.dao.LoginDao;
 import com.dreaming.model.entity.user.UserBaseEntity;
 import com.dreaming.exception.DreamingSysException;
@@ -28,5 +30,21 @@ public class LoginQueryImpl implements ILoginQuery {
                     (String)(null == entity.getUserName()? entity.getPhone():entity.getUserName()));
         }
         return userBaseEntity;
+    }
+
+    @Override
+    public ServerReturn run(String id) {
+        try {
+            //承接上文
+            UserBaseEntity entity = (UserBaseEntity) ServerFlow.getContxt(id);
+
+            UserBaseEntity result = queryUserBase(entity);
+
+            //准备下文
+            ServerFlow.setContxt(id,result);
+        } catch (DreamingSysException e) {
+            return ServerReturn.FAILED;
+        }
+        return ServerReturn.SUCCESS;
     }
 }

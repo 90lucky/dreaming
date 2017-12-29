@@ -1,13 +1,11 @@
 package com.dreaming.controller;
 
 import com.dreaming.base.Result;
+import com.dreaming.exception.DreamingSysException;
 import com.dreaming.model.bean.LoginBean;
 import com.dreaming.model.convert.LoginBeanConvert;
 import com.dreaming.model.entity.user.UserBaseEntity;
-import com.dreaming.exception.DreamingSysException;
-import com.dreaming.service.login.ILoginCreate;
-import com.dreaming.service.login.ILoginQuery;
-import com.dreaming.service.login.ILoginUpdate;
+import com.dreaming.service.login.LoginService;
 import com.dreaming.validation.LoginValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,13 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SysLoginController {
     @Autowired
-    private ILoginQuery loginQuerySevice;
-
-    @Autowired
-    private ILoginUpdate loginUpdateService;
-
-    @Autowired
-    private ILoginCreate loginCreateService;
+    private LoginService loginService;
 
     /**
      * the access for user login, user phone or name is needed and also with the password
@@ -46,7 +38,7 @@ public class SysLoginController {
 
             UserBaseEntity queryEntity = LoginBeanConvert.getEntityForLogin(loginBean);
 
-            resultEntity = loginQuerySevice.queryUserBase(queryEntity);
+            resultEntity = loginService.queryLogin(queryEntity);
 
             //通过验证后，更新登陆时间,可将信息存于消息队列，异步更新
 //            loginUpdateService.updateUserBase(resultEntity);
@@ -67,7 +59,7 @@ public class SysLoginController {
         try {
             LoginValidate.checkRegisterParam(loginBean);
             UserBaseEntity userEntity = LoginBeanConvert.getEntityForRegister(loginBean);
-            loginCreateService.createUserBase(userEntity);
+            loginService.createLogin(userEntity);
         } catch (DreamingSysException e) {
             e.printStackTrace();
             return Result.error(e.getErrorCode(),e.getErrorMsg());

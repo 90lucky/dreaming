@@ -33,6 +33,7 @@ public class BaseDao {
                 .append(paramMap.get(DB_VALUE_STR)).append(")");
         PreparedStatement psd = conn.prepareStatement(stringBuilder.toString());
         psd.executeUpdate();
+        psd.close();
     }
 
     protected   <T extends AbstractEntity> List<T> queryAll(Connection conn,T entity) throws SQLException, IllegalAccessException, InstantiationException {
