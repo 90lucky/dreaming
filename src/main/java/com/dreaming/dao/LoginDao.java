@@ -2,8 +2,8 @@ package com.dreaming.dao;
 
 import com.dreaming.base.ErrorCode;
 import com.dreaming.dao.pool.BaseSysConPool;
-import com.dreaming.model.entity.user.UserBaseEntity;
 import com.dreaming.exception.DreamingSysException;
+import com.dreaming.model.entity.user.UserBaseEntity;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,8 +49,7 @@ public class LoginDao extends BaseDao {
      * @return
      * @throws DreamingSysException
      */
-    public UserBaseEntity queryUserBase(UserBaseEntity queryEntity) throws DreamingSysException{
-
+    public UserBaseEntity queryUserBase(UserBaseEntity queryEntity) throws DreamingSysException {
         UserBaseEntity entity;
         try {
             entity = queryOne(conn,queryEntity);
