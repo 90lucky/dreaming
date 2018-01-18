@@ -61,7 +61,6 @@ public class JDBCManagers {
         {
             return new LinkedList<>();
         }
-        JDBC_TRANS.get(id).clear();
         return JDBC_TRANS.get(id);
     }
 

@@ -7,4 +7,6 @@ import com.dreaming.model.entity.AbstractEntity;
  * create on 2017/12/14
  */
 public class UserInfoEntity extends AbstractEntity {
+    public UserInfoEntity() {
+    }
 }
