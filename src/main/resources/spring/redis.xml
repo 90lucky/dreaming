@@ -11,19 +11,30 @@
 
         <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
                 <property name="maxIdle" value="${redis.maxIdle}" />
-                <property name="maxActive" value="${redis.maxActive}" />
-                <property name="maxWait" value="${redis.maxWait}" />
+                <property name="maxTotal" value="${redis.maxActive}" />
+                <property name="minIdle" value="${redis.minIdle}" />
                 <property name="testOnBorrow" value="${redis.testOnBorrow}" />
         </bean>
 
-        <bean id="jedis" class="redis.clients.jedis.Jedis">
-                <property name="name" value="${redis.maxIdle}" />
-                <property name="maxActive" value="${redis.maxActive}" />
-                <property name="maxWait" value="${redis.maxWait}" />
-                <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+        <bean id="jedis" class="redis.clients.jedis.JedisCluster">
+                <constructor-arg>
+                        <set>
+                                <value>192.168.13.94:7000</value>
+                                <value>192.168.13.94:7001</value>
+                                <value>192.168.13.94:7002</value>
+                                <value>192.168.13.95:7003</value>
+                                <value>192.168.13.95:7004</value>
+                                <value>192.168.13.96:7005</value>
+                        </set>
+                </constructor-arg>
+                <constructor-arg name="poolConfig" ref="poolConfig" />
         </bean>
 
-        <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
-                <property name="connectionFactory"   ref="connectionFactory" />
-        </bean>
+        <!--<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">-->
+                <!--<property name="poolConfig" ref="poolConfig"/>-->
+                <!--&lt;!&ndash;<property name="password" ref="${spring.redis.password}"/>&ndash;&gt;-->
+        <!--</bean>-->
+        <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">-->
+                <!--<property name="connectionFactory"   ref="connectionFactory" />-->
+        <!--</bean>-->
 </beans>

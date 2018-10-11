@@ -9,28 +9,20 @@ import com.dreaming.model.entity.AbstractEntity;
  */
 public class UserBaseEntity extends AbstractEntity {
 
-    private static final String KEY_ID = "ID";
-    private static final String KEY_USER_ID = "USER_ID";
-    private static final String KEY_USER_NAME = "USER_NAME";
-    private static final String KEY_PASSWORD = "USER_PASSWORD";
-    private static final String KEY_USER_PHONE = "USER_PHONE";
-    private static final String KEY_USER_MAIL = "USER_MAIL";
-    private static final String KEY_CREATE_TIME = "CREATE_TIME";
-    private static final String KEY_UPDATE_TIME = "UPDATE_TIME";
-    private static final String KEY_LOGIN_TIME = "LOGIN_TIME";
+    public static final String KEY_ID = "ID";
+    public static final String KEY_USER_ID = "USER_ID";
+    public static final String KEY_USER_NAME = "USER_NAME";
+    public static final String KEY_PASSWORD = "USER_PASSWORD";
+    public static final String KEY_USER_PHONE = "USER_PHONE";
+    public static final String KEY_USER_MAIL = "USER_MAIL";
+    public static final String KEY_CREATE_TIME = "CREATE_TIME";
+    public static final String KEY_UPDATE_TIME = "UPDATE_TIME";
+    public static final String KEY_LOGIN_TIME = "LOGIN_TIME";
 
 
     public UserBaseEntity(){
         put(KEY_TABLE,"t_sys_user_base");
         initEntity(this);
-//        put(KEY_USER_ID,null);
-//        put(KEY_USER_NAME,null);
-//        put(KEY_PASSWORD,null);
-//        put(KEY_USER_PHONE,null);
-//        put(KEY_USER_MAIL,null);
-//        put(KEY_CREATE_TIME,null);
-//        put(KEY_UPDATE_TIME,null);
-//        put(KEY_LOGIN_TIME,null);
     }
 
     private String id;

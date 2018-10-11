@@ -1,5 +1,7 @@
 package com.dreaming.model.bean;
 
+import java.util.List;
+
 /**
  *  Message:bean is defined for the request from web json , that not contact with db directly,
  *          so some Validation can be done
@@ -13,6 +15,16 @@ public class LoginBean {
     private String phone;
     private String userName;
     private String password;
+
+    public List<UserBean> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<UserBean> userList) {
+        this.userList = userList;
+    }
+
+    private List<UserBean> userList;
 
     public String getPhone() {
         return phone;

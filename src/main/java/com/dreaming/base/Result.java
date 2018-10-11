@@ -1,6 +1,7 @@
 package com.dreaming.base;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -16,43 +17,54 @@ import java.util.Map;
 public class Result extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
-    public Result() {
-        put("code", ErrorCode.SYS_SUCCESS);
-    }
+    private static final String CODE = "code";
+    private static final String SUCCESS_CODE = "200";
+    private static final String ERROR_CODE = "500";
+    private static final String MESSAGE = "msg";
+    private static final String RESPONSE = "response";
+    private static final String DATA = "date";
+    private static final String PAGE = "page";
 
-    public static Result error() {
-        return error(ErrorCode.SYS_UNKNOW_ERROR, "undefine error");
-    }
+    private Result(){}
+
 
     public static Result error(String msg) {
-        return error(ErrorCode.SYS_UNKNOW_ERROR, msg);
+        return error(ERROR_CODE,msg);
     }
-
-    public static Result error(String code, String msg) {
-        Result r = new Result();
-        r.put("code", code);
-        r.put("msg", msg);
-        return r;
-    }
-
-    public static Result success(String msg) {
-        Result r = new Result();
-        r.put("msg", msg);
-        return r;
-    }
-
-    public static Result success(Map<String, Object> map) {
-        Result r = new Result();
-        r.putAll(map);
-        return r;
+    public static Result error(String code,String msg) {
+        return getResultReturn(code,msg,null,null);
     }
 
     public static Result success() {
-        return new Result();
+        return success(null);
     }
 
-    public Result put(String key, Object value) {
-        super.put(key, value);
-        return this;
+    public static Result success(String msg) {
+        return success(msg,null);
     }
+
+    public static Result success(String msg,Object data) {
+        return success(msg,null,data);
+    }
+
+    public static Result success(String msg, Page page, Object data) {
+        return getResultReturn(SUCCESS_CODE,msg,page,data);
+    }
+
+
+    private static Result getResultReturn(String code, String msg, Page page,Object data) {
+        Result resultReturn = new Result();
+        resultReturn.put(CODE,code);
+        resultReturn.put(MESSAGE,msg);
+        resultReturn.put(RESPONSE,getResponse(page, data));
+        return resultReturn;
+    }
+
+    private static Map<String,Object> getResponse(Page page, Object data){
+        Map<String,Object> response = new LinkedHashMap<>();
+        response.put(PAGE,page);
+        response.put(DATA,data);
+        return response;
+    }
+
 }

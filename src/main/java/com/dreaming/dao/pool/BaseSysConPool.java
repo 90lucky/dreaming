@@ -49,7 +49,7 @@ public class BaseSysConPool {
         Connection conn=null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test" , "root", "root" );
+            conn = DriverManager.getConnection("jdbc:mysql://192.168.13.94:3306/test" , "root", "123456" );
         } catch (ClassNotFoundException | SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

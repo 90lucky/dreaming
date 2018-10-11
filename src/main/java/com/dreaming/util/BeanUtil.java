@@ -1,8 +1,10 @@
 package com.dreaming.util;
 
-import com.dreaming.model.entity.AbstractEntity;
 import com.dreaming.exception.DreamingSysException;
+import com.dreaming.model.entity.AbstractEntity;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cglib.beans.BeanMap;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +19,7 @@ import java.util.Map;
  * create by lucky on 2017/12/8
  */
 public class BeanUtil {
+    private final static Logger logger = LoggerFactory.getLogger(BeanUtil.class);
 
     private BeanUtil(){}
 
@@ -40,7 +43,8 @@ public class BeanUtil {
                     Method desMethod = entity.getClass().getMethod(methodName, method.getReturnType());
                     desMethod.invoke(entity, method.invoke(sourceBean));
                 } catch (NoSuchMethodException|IllegalAccessException|InvocationTargetException e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.dreaming.controller;
 
+import com.dreaming.base.Page;
 import com.dreaming.base.Result;
 import com.dreaming.exception.DreamingSysException;
 import com.dreaming.model.bean.LoginBean;
@@ -7,10 +8,15 @@ import com.dreaming.model.convert.LoginBeanConvert;
 import com.dreaming.model.entity.user.UserBaseEntity;
 import com.dreaming.service.login.LoginService;
 import com.dreaming.validation.LoginValidate;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 
 /**
@@ -21,7 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
  * create by lucky on 2017/12/8
  */
 @RestController
+@RequestMapping("/system")
 public class SysLoginController {
+    private final static Logger logger = LoggerFactory.getLogger(SysLoginController.class);
+
     @Autowired
     private LoginService loginService;
 
@@ -30,8 +39,10 @@ public class SysLoginController {
      * @param loginBean user name,password or user phone password
      * @return if user is exist, return 200, else return the exception
      */
-    @RequestMapping("/system/login")
+    @RequestMapping("/login")
     public Result login(@RequestBody LoginBean loginBean) {
+        logger.info("[SysLoginController]<==>login:",loginBean);
+        logger.debug("[SysLoginController]<==>login:",loginBean);
         UserBaseEntity resultEntity;
         try {
             LoginValidate.checkLoginParam(loginBean);
@@ -46,7 +57,8 @@ public class SysLoginController {
             e.printStackTrace();
             return Result.error(e.getErrorCode(),e.getErrorMsg());
         }
-        return Result.success(resultEntity);
+        List<UserBaseEntity> list = Lists.newArrayList(resultEntity);
+        return Result.success("",new Page(),list);
     }
 
     /**
@@ -54,7 +66,7 @@ public class SysLoginController {
      * @param loginBean phone num and also with password
      * @return rigist success or error with massage
      */
-    @RequestMapping("/system/register")
+    @RequestMapping("/register")
     public Result regist(@RequestBody LoginBean loginBean) {
         try {
             LoginValidate.checkRegisterParam(loginBean);
