@@ -6,11 +6,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class JDBCManagers {
 
-    private static final Map<String,LinkedList<Connection>> JDBC_TRANS = new HashMap<>();
+    private static final Map<String,List<Connection>> JDBC_TRANS = new HashMap<>();
 
     public static void addConn2Trans(String id,Connection conn)
     {
@@ -19,7 +20,7 @@ public class JDBCManagers {
             JDBC_TRANS.get(id).add(conn);
         }
         else {
-            LinkedList<Connection> list = new LinkedList<>();
+            List<Connection> list = new LinkedList<>();
             list.add(conn);
             JDBC_TRANS.put(id,list);
         }
@@ -56,7 +57,7 @@ public class JDBCManagers {
         removeKey(id);
     }
 
-    private static LinkedList<Connection> getConnList(String id){
+    private static List<Connection> getConnList(String id){
         if(!JDBC_TRANS.containsKey(id))
         {
             return new LinkedList<>();

@@ -11,6 +11,6 @@
                                   location="classpath*:properties/local.properties
                                   ,file:/data/config/prod.properties"/>
 
-    <!--<import resource="redis.xml"/>-->
+    <import resource="redis.xml"/>
     <import resource="datasource.xml"/>
 </beans>

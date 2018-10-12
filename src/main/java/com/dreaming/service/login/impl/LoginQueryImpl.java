@@ -33,18 +33,18 @@ public class LoginQueryImpl implements ILoginQuery {
     }
 
     @Override
-    public ServerReturn run(String id) {
-        try {
-            //承接上文
-            UserBaseEntity entity = (UserBaseEntity) ServerFlow.getContxt(id);
+    public ServerReturn run(String id) throws DreamingSysException {
 
-            UserBaseEntity result = queryUserBase(entity);
+        //承接上文
+        UserBaseEntity entity = (UserBaseEntity) ServerFlow.getContxt(id);
 
-            //准备下文
-            ServerFlow.setContxt(id,result);
-        } catch (DreamingSysException e) {
-            return ServerReturn.FAILED;
-        }
+        UserBaseEntity result = queryUserBase(entity);
+
+        result.setId(null);
+
+        //准备下文
+        ServerFlow.setContxt(id,result);
+
         return ServerReturn.SUCCESS;
     }
 }

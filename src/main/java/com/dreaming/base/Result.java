@@ -15,21 +15,12 @@ import java.util.Map;
  * create on 2017/12/9
  */
 public class Result extends HashMap<String, Object> {
-    private static final long serialVersionUID = 1L;
-
-    private static final String CODE = "code";
-    private static final String SUCCESS_CODE = "200";
-    private static final String ERROR_CODE = "500";
-    private static final String MESSAGE = "msg";
-    private static final String RESPONSE = "response";
-    private static final String DATA = "date";
-    private static final String PAGE = "page";
 
     private Result(){}
 
 
     public static Result error(String msg) {
-        return error(ERROR_CODE,msg);
+        return error(ErrorCode.SYS_UNKNOW_ERROR,msg);
     }
     public static Result error(String code,String msg) {
         return getResultReturn(code,msg,null,null);
@@ -48,22 +39,23 @@ public class Result extends HashMap<String, Object> {
     }
 
     public static Result success(String msg, Page page, Object data) {
-        return getResultReturn(SUCCESS_CODE,msg,page,data);
+        return getResultReturn(ErrorCode.SYS_SUCCESS,msg,page,data);
     }
 
 
     private static Result getResultReturn(String code, String msg, Page page,Object data) {
         Result resultReturn = new Result();
-        resultReturn.put(CODE,code);
-        resultReturn.put(MESSAGE,msg);
-        resultReturn.put(RESPONSE,getResponse(page, data));
+        resultReturn.put(Constants.CODE,code);
+        resultReturn.put(Constants.MESSAGE,msg);
+        if (null != page || null != data)
+            resultReturn.put(Constants.RESPONSE, getResponse(page, data));
         return resultReturn;
     }
 
     private static Map<String,Object> getResponse(Page page, Object data){
         Map<String,Object> response = new LinkedHashMap<>();
-        response.put(PAGE,page);
-        response.put(DATA,data);
+        response.put(Constants.PAGE,page);
+        response.put(Constants.DATA,data);
         return response;
     }
 

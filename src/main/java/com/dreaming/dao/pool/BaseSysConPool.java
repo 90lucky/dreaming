@@ -2,6 +2,8 @@ package com.dreaming.dao.pool;
 
 import com.dreaming.base.JDBCManagers;
 import com.dreaming.util.ToolUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -21,10 +23,17 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class BaseSysConPool {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BaseSysConPool.class);
+
     /**
      * 最大连接数
      */
-    private static final int COUNT = 20;
+    private static final int MAXCOUNT = 200;
+
+    /**
+     * 最大连接数
+     */
+    private static final int INTCOUNT = 20;
     /**
      * 存放数据库
      */
@@ -39,7 +48,7 @@ public class BaseSysConPool {
      * 初始化信息
      */
     static {
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < INTCOUNT; i++) {
             connections.add(createConnection());
         }
     }
@@ -51,8 +60,7 @@ public class BaseSysConPool {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://192.168.13.94:3306/test" , "root", "123456" );
         } catch (ClassNotFoundException | SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("[BaseSysConPool]: createConnection exception:{}",e.getMessage());
         }
         return conn;
     }
@@ -63,11 +71,16 @@ public class BaseSysConPool {
     public static Connection getConnection(String id) {
         final ReentrantLock reentrantLock = lock;
         reentrantLock.lock();
+        Connection connection;
         try {
             if (connections.isEmpty()) {
-                notEmpty.await();
+                if (connections.size() <= MAXCOUNT) {
+                    connections.add(createConnection());
+                }else {
+                    notEmpty.await();
+                }
             }
-            Connection connection = connections.removeFirst();
+            connection = connections.removeFirst();
             //非查询的链接，开启事务管理
             if (!ToolUtil.strIsBlanck(id))
             {
@@ -95,7 +108,7 @@ public class BaseSysConPool {
         final ReentrantLock reentrantLock = lock;
         reentrantLock.lock();
         try {
-            if (connections.size() == COUNT) {
+            if (connections.size() == INTCOUNT) {
                 notFull.await();
             }
             if (connection == null || connection.isClosed()) {

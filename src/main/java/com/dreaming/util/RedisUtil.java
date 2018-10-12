@@ -1,8 +1,12 @@
 package com.dreaming.util;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
@@ -13,32 +17,40 @@ import java.util.*;
  * @author lucky
  * create on 2017/12/9
  */
+@Service
+@Configuration
 @PropertySource("classpath:properties/local.properties")
 public class RedisUtil {
-    @Value("${redis.maxIdle}")
-    private static Integer minIdle;
+    @Value("${redis.minIdle}")
+    private Integer minIdle;
 
     @Value("${redis.maxIdle}")
-    private static Integer maxIdle;
+    private Integer maxIdle;
 
     @Value("${redis.maxTotal}")
-    private static Integer maxTotal;
+    private  Integer maxTotal;
 
     @Value("${redis.maxWait}")
-    private static Integer maxWaitMillis;
+    private  Integer maxWaitMillis;
 
     @Value("${redis.testOnBorrow}")
-    private static boolean testOnBorrow;
+    private  boolean testOnBorrow;
 
     @Value("${spring.redis.cluster.nodes}")
-    private static String clusterNodes;
+    private  String clusterNodes;
 
     @Value("${spring.redis.cluster.max-redirects}")
-    private static Integer mmaxRedirectsac;
+    private  Integer mmaxRedirectsac;
 
     private static JedisCluster jedisCluster;
 
-    static  {
+    @Autowired
+    private JedisCluster jedis;
+
+    public RedisUtil(){}
+
+    @Bean
+    JedisCluster newJedisCluster()  {
         String[] cNodes = clusterNodes.split(",");
         Set<HostAndPort> nodes =new HashSet<>();
         //分割出集群节点
@@ -53,6 +65,7 @@ public class RedisUtil {
         jedisPoolConfig.setMinIdle(minIdle);
         //创建集群对象
         jedisCluster = new JedisCluster(nodes,jedisPoolConfig);
+        return new JedisCluster(nodes,jedisPoolConfig);
     }
 
     /**
@@ -61,7 +74,9 @@ public class RedisUtil {
      * @param value
      */
     public static void put(String key,String value){
+//        jedisCluster = new RedisUtil().jedis;
         jedisCluster.set(key,value);
+//        jedisCluster.set(key,value);
     }
 
     /**

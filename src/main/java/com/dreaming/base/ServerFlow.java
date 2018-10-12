@@ -5,6 +5,7 @@ import com.dreaming.service.IBaseService;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 public class ServerFlow {
 
-    private static final  Map<String,LinkedList<IBaseService>> FLOW_STEP = new HashMap<>();
+    private static final  Map<String,List<IBaseService>> FLOW_STEP = new HashMap<>();
     private static final  Map<String,Object> FLOW_CONTEXT = new HashMap<>();
 
     public static void addStep(String id,IBaseService service)
@@ -24,13 +25,13 @@ public class ServerFlow {
         }
         else
         {
-            LinkedList<IBaseService> list = new LinkedList<>();
+            List<IBaseService> list = new LinkedList<>();
             list.add(service);
             FLOW_STEP.put(id,  list);
         }
     }
 
-    public static LinkedList<IBaseService> getFlow(String id){
+    public static List<IBaseService> getFlow(String id){
         return FLOW_STEP.get(id);
     }
 
@@ -46,14 +47,15 @@ public class ServerFlow {
 
     public static void run(String id) throws DreamingSysException {
         try {
-            LinkedList<IBaseService> list = FLOW_STEP.get(id);
+            List<IBaseService> list = FLOW_STEP.get(id);
             for (IBaseService service:list)
             {
                 ServerReturn result = service.run(id);
-                if(result==ServerReturn.FAILED)
-                {
+                if (result == ServerReturn.FAILED) {
                     JDBCManagers.rollback(id);
                     break;
+                } else if (result == ServerReturn.NEXT) {
+                    service.run(id);
                 }
             }
         }catch (DreamingSysException e)

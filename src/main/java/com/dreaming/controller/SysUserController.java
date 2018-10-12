@@ -23,12 +23,6 @@ public class SysUserController {
 
     @RequestMapping("/system/user/add")
     public Result Login(@RequestBody UserBean userBean) {
-        try {
-            UserInfoEntity userEntity = BeanUtil.convertBean2Entity(userBean,new UserInfoEntity());
-            userCreate.createUser(userEntity);
-        } catch (DreamingSysException e) {
-            e.printStackTrace();
-        }
         return Result.success();
     }
 }

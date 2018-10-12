@@ -40,25 +40,23 @@ public class SysLoginController {
      * @return if user is exist, return 200, else return the exception
      */
     @RequestMapping("/login")
-    public Result login(@RequestBody LoginBean loginBean) {
-        logger.info("[SysLoginController]<==>login:",loginBean);
-        logger.debug("[SysLoginController]<==>login:",loginBean);
+    public Result login(@RequestBody LoginBean loginBean) throws DreamingSysException {
+        logger.info("[SysLoginController] login:",loginBean);
         UserBaseEntity resultEntity;
         try {
             LoginValidate.checkLoginParam(loginBean);
-
             UserBaseEntity queryEntity = LoginBeanConvert.getEntityForLogin(loginBean);
-
             resultEntity = loginService.queryLogin(queryEntity);
-
-            //通过验证后，更新登陆时间,可将信息存于消息队列，异步更新
-//            loginUpdateService.updateUserBase(resultEntity);
+            List<UserBaseEntity> list = Lists.newArrayList(resultEntity);
+            return Result.success("",new Page(),list);
         } catch (DreamingSysException e) {
-            e.printStackTrace();
-            return Result.error(e.getErrorCode(),e.getErrorMsg());
+            logger.error("[SysLoginController] login DreamingSysException:{}",e.getErrorMsg());
+            throw e;
+        } catch (Exception e){
+            logger.error("[SysLoginController] login Exception:{}",e.getMessage());
+            throw e;
         }
-        List<UserBaseEntity> list = Lists.newArrayList(resultEntity);
-        return Result.success("",new Page(),list);
+
     }
 
     /**
@@ -67,16 +65,19 @@ public class SysLoginController {
      * @return rigist success or error with massage
      */
     @RequestMapping("/register")
-    public Result regist(@RequestBody LoginBean loginBean) {
+    public Result register(@RequestBody LoginBean loginBean) throws DreamingSysException {
         try {
             LoginValidate.checkRegisterParam(loginBean);
             UserBaseEntity userEntity = LoginBeanConvert.getEntityForRegister(loginBean);
             loginService.createLogin(userEntity);
+            return Result.success();
         } catch (DreamingSysException e) {
-            e.printStackTrace();
-            return Result.error(e.getErrorCode(),e.getErrorMsg());
+            logger.error("[SysLoginController] register DreamingSysException:{}",e.getErrorMsg());
+            throw e;
+        } catch (Exception e){
+            logger.error("[SysLoginController] register Exception:{}",e.getMessage());
+            throw e;
         }
-        return Result.success();
     }
 
 
