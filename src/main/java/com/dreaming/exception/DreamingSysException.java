@@ -1,5 +1,7 @@
 package com.dreaming.exception;
 
+import com.dreaming.base.ErrorCode;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,14 +24,16 @@ public class DreamingSysException extends Exception {
         super();
     }
 
+    public DreamingSysException(String message) {
+        this(ErrorCode.SYS_UNKNOW_ERROR,message);
+    }
+
     public DreamingSysException(String errorCode, String message) {
-        this.errorCode = errorCode;
-        this.errorMsg = message;
+        this(errorCode,message,null);
     }
 
     public DreamingSysException(String errorCode, String message, String... params) {
-        this.errorCode = errorCode;
-        this.errorMsg = replaceWithParams(message, params);
+        this(errorCode,message,null,params);
     }
 
     public DreamingSysException(String errorCode, String message, Exception e, String... params) {

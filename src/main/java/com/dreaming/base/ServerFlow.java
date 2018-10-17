@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author lucky
@@ -15,7 +16,7 @@ import java.util.Map;
 public class ServerFlow {
 
     private static final  Map<String,List<IBaseService>> FLOW_STEP = new HashMap<>();
-    private static final  Map<String,Object> FLOW_CONTEXT = new HashMap<>();
+    private static final  Map<String,Object> FLOW_CONTEXT = new ConcurrentHashMap<>();
 
     public static void addStep(String id,IBaseService service)
     {

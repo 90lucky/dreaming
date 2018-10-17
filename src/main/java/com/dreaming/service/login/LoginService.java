@@ -10,25 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginService{
+public class LoginService {
     @Autowired
     private ILoginQuery loginQuery;
 
     @Autowired
-    private ILoginUpdate loginUpdate;
-
-    @Autowired
     private ILoginCreate loginCreate;
 
-//    @Autowired
-//    private BoneCPDataSource dataSource;
     @Autowired
     private IUserCreate userCreate;
+
     public void createLogin(UserBaseEntity userBaseEntity) throws DreamingSysException {
         //添加流的内容
         String flowId = ToolUtil.getRandomUUID();
-        ServerFlow.setContxt(flowId,userBaseEntity);
-        ServerFlow.addStep(flowId,loginCreate);
+        ServerFlow.setContxt(flowId, userBaseEntity);
+        ServerFlow.addStep(flowId, loginCreate);
 
         //执行流
         ServerFlow.run(flowId);
@@ -38,10 +34,10 @@ public class LoginService{
 
         //添加流
         String flowId = ToolUtil.getRandomUUID();
-        RedisUtil.put("flowId",flowId);
-        ServerFlow.setContxt(flowId,userBaseEntity);
-        ServerFlow.addStep(flowId,loginQuery);
-        ServerFlow.addStep(flowId,userCreate);
+        RedisUtil.put("flowId", flowId);
+        ServerFlow.setContxt(flowId, userBaseEntity);
+        ServerFlow.addStep(flowId, loginQuery);
+        ServerFlow.addStep(flowId, userCreate);
 
         //执行流
         ServerFlow.run(flowId);

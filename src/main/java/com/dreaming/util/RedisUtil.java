@@ -1,23 +1,23 @@
 package com.dreaming.util;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Service;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
  * @author lucky
  * create on 2017/12/9
  */
-@Service
 @Configuration
 @PropertySource("classpath:properties/local.properties")
 public class RedisUtil {
@@ -40,14 +40,15 @@ public class RedisUtil {
     private  String clusterNodes;
 
     @Value("${spring.redis.cluster.max-redirects}")
-    private  Integer mmaxRedirectsac;
+    private  Integer maxRedirectsac;
 
     private static JedisCluster jedisCluster;
 
-    @Autowired
-    private JedisCluster jedis;
-
-    public RedisUtil(){}
+    public RedisUtil() throws IOException {
+        Properties  properties = new Properties ();
+        properties.load(this.getClass().getResourceAsStream("classpath:properties/local.properties"));
+        properties.getProperty("redis.maxWait");
+    }
 
     @Bean
     JedisCluster newJedisCluster()  {
@@ -74,9 +75,7 @@ public class RedisUtil {
      * @param value
      */
     public static void put(String key,String value){
-//        jedisCluster = new RedisUtil().jedis;
         jedisCluster.set(key,value);
-//        jedisCluster.set(key,value);
     }
 
     /**
